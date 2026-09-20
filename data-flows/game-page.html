@@ -1,0 +1,50 @@
+<html>
+
+  <head>
+    <title>Data Flow - Register Page</title>
+    <script src="https://unpkg.com/mermaid@8.5.0/dist/mermaid.min.js" />
+    <script>
+      mermaid.initialize({
+        startOnLoad: true
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="mermaid">
+      stateDiagram
+        [*] --> VerifyUser
+        VerifyUser --> SetupPhase : Start
+        SetupPhase --> TurnPhase : Ready
+        TurnPhase --> [*]
+
+        state VerifyUser {
+          [*] --> LookupCookie
+          LookupCookie --> CheckCookieWithServer : HasCookie
+          CheckCookieWithServer --> [*]: ValidToken
+          CheckCookieWithServer --> ClearCookie : InvalidToken
+          LookupCookie --> RedirectToRegisterPage : NoHasCookie
+          ClearCookie --> RedirectToRegisterPage
+        }
+        state SetupPhase {
+          state PlayerActions {
+            PlaceShips
+            --
+            ChooseWeapons
+          }
+          --
+          state SpectatorActions {}
+        }
+        state TurnPhase {
+          state PlayerActions {
+            FireWeapon
+            --
+            ChangeWeapons
+          }
+          --
+          state SpectatorActions {}
+        }
+    </div>
+  </body>
+
+</html>

@@ -6,21 +6,17 @@ from typing import (
     Optional,
 )
 
-CONFIG = None
-
 DEFAULT_BIND_ADDRESS = "0.0.0.0"
 DEFAULT_BIND_PORT = 80
 DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_ROOT_URL = "/"
-DEFAULT_SERVER_PROCESSES = 0
+DEFAULT_SERVER_PROCESSES = 1
 
 ENV_VAR_BIND_ADDRESS = "BS__BIND_ADDRESS"
 ENV_VAR_BIND_PORT = "BS__BIND_PORT"
 ENV_VAR_LOG_LEVEL = "BS__LOG_LEVEL"
 ENV_VAR_ROOT_URL = "BS__ROOT_URL"
 ENV_VAR_SERVER_PROCESSES = "BS__SERVER_PROCESSES"
-ENV_VAR_SSL_CERT = "BS__SSL_CERT"
-ENV_VAR_SSL_KEY = "BS__SSL_KEY"
 
 LOG_LEVEL_CHOICES = [
     "DEBUG",
@@ -36,15 +32,13 @@ WEBSOCKET_URL_PART = "ws"
 class Config:
     def __init__(
         self, log_level: str, root_url: str, bind_port: int, bind_address: str,
-        server_processes: int, ssl_cert, ssl_key
+        server_processes: int
     ):
         self.log_level = log_level
         self.root_url = root_url
         self.bind_port = bind_port
         self.bind_address = bind_address
         self.server_processes = server_processes
-        self.ssl_cert = ssl_cert
-        self.ssl_key = ssl_key
 
     def request_url(self, url_part: Optional[str] = None) -> str:
         return os.path.join(self.root_url, url_part)
@@ -100,8 +94,6 @@ def make_config() -> Config:
             type=int,
             env=ENV_VAR_SERVER_PROCESSES
         ),
-        ssl_cert=ConfigArg("--ssl-cert", default=None, env=ENV_VAR_SSL_CERT),
-        ssk_key=ConfigArg("--ssl-key", default=None, env=ENV_VAR_SSL_KEY),
     )
 
     parser = argparse.ArgumentParser()
@@ -115,11 +107,4 @@ def make_config() -> Config:
         args.bind_port,
         args.bind_address,
         args.server_processes,
-        args.ssl_cert,
-        args.ssl_key,
     )
-
-
-def set_config_singleton(config: Config):
-    global CONFIG
-    CONFIG = config

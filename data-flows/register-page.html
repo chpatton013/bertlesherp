@@ -1,0 +1,29 @@
+<html>
+
+  <head>
+    <title>Data Flow - Register Page</title>
+    <script src="https://unpkg.com/mermaid@8.5.0/dist/mermaid.min.js" />
+    <script>
+      mermaid.initialize({
+        startOnLoad: true
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="mermaid">
+      stateDiagram
+        [*] --> LookupCookie
+        LookupCookie --> CheckCookieWithServer : HasCookie
+        CheckCookieWithServer --> ClearCookie : InvalidToken
+        ClearCookie --> RegisterUser
+        LookupCookie --> RegisterUser : NoHasCookie
+        RegisterUser --> CreateCookie : ValidUserName
+        RegisterUser --> RegisterUser : InvalidUserName
+        CheckCookieWithServer --> RedirectToLobbyPage : ValidToken
+        CreateCookie --> RedirectToLobbyPage
+        RedirectToLobbyPage --> [*]
+    </div>
+  </body>
+
+</html>

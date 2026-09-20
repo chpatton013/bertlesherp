@@ -1,0 +1,61 @@
+<html>
+
+  <head>
+    <title>Data Flow - Lobby Page</title>
+    <script src="https://unpkg.com/mermaid@8.5.0/dist/mermaid.min.js" />
+    <script>
+      mermaid.initialize({
+        startOnLoad: true
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="mermaid">
+      stateDiagram
+        [*] --> VerifyUser
+        VerifyUser --> InLobby : Join
+        InLobby --> [*]
+
+        state VerifyUser {
+          [*] --> LookupCookie
+          LookupCookie --> CheckCookieWithServer : HasCookie
+          CheckCookieWithServer --> [*]: ValidToken
+          CheckCookieWithServer --> ClearCookie : InvalidToken
+          LookupCookie --> RedirectToRegisterPage : NoHasCookie
+          ClearCookie --> RedirectToRegisterPage
+        }
+        state InLobby {
+          state LeaderActions {
+            state PromoteUserToLeader {
+              Leader --> NotLeader : Demote
+              NotLeader --> Leader : Promote
+            }
+            --
+            state PromoteSpectatorToPlayer {
+              Spectator --> Player : Promote
+            }
+            --
+            state DemotePlayerToSpectator {
+              Player --> Spectator : Demote
+            }
+            --
+            state KickUser {
+              InLobby --> RedirectToRegisterPage : Kick
+            }
+            --
+            state ChangeGameSettings
+            --
+            state StartGame {
+              AllPlayersReady --> RedirectToGamePage : Start
+            }
+          }
+          state PlayerActions {
+            Ready --> NotReady
+          }
+          state SpectatorActions {}
+        }
+    </div>
+  </body>
+
+</html>

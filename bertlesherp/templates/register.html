@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+  <head>
+    <title>BertleSherp - Register</title>
+    <meta charset="utf-8" />
+    <script>
+      let ws_uri = new URL("./ws", window.location.toString());
+      if (window.location.protocol == "https:") {
+        ws_uri.protocol = "wss:";
+      } else {
+        ws_uri.protocol = "ws:";
+      }
+      let ws = null;
+
+      function make_websocket() {
+        ws = new WebSocket(ws_uri);
+        ws.onmessage = function (ev) {
+          alert(ev.data);
+        };
+        ws.onopen = function (ev) {
+          document.querySelectorAll("input").disabled = false;
+        };
+        ws.onclose = function (ev) {
+          document.querySelectorAll("input").disabled = true;
+          ws = null;
+          setTimeout(make_websocket, 5000);
+        };
+      }
+      make_websocket();
+      document.addEventListener("DOMContentLoaded", function (ev) {
+        document.getElementById("register").addEventListener("click", function (ev) {
+          let message = {};
+          let name = document.getElementById("register_name").value;
+          if (!name) {
+            alert("Missing name. Cannot register.");
+            return;
+          }
+          message.name = name;
+          let token = document.getElementById("register_token").value;
+          if (token) {
+            message.token = token;
+          }
+          ws.send(JSON.stringify({
+            register_user: message
+          }));
+        });
+        document.getElementById("deregister").addEventListener("click", function (ev) {
+          let message = {};
+          let token = document.getElementById("register_token").value;
+          if (!token) {
+            alert("Missing token. Cannot deregister.");
+            return;
+          }
+          message.token = token;
+          ws.send(JSON.stringify({
+            deregister_user: message
+          }));
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <h1>Register</h1>
+    <div>
+      <div>
+        <label for="register_name">name:</label>
+        <input type="text" id="register_name" />
+      </div>
+      <div>
+        <label for="register_token">token:</label>
+        <input type="text" id="register_token" />
+      </div>
+      <div>
+        <input type="submit" id="register" value="register" />
+        <input type="submit" id="deregister" value="deregister" />
+      </div>
+    </div>
+  </body>
+
+</html>

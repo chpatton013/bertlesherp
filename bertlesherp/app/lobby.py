@@ -1,7 +1,9 @@
 import logging
 
 from typing import (
+    Any,
     Awaitable,
+    Dict,
     List,
     Optional,
     Union,
@@ -12,6 +14,10 @@ import tornado.web
 import tornado.websocket
 
 from ..config import Config
+
+
+def decode_message(message: Dict[str, Any]) -> Union[Any]:
+    return message
 
 
 class LobbyRequestHandler(tornado.web.RequestHandler):
@@ -31,6 +37,8 @@ class LobbyWebSocketHandler(tornado.websocket.WebSocketHandler):
                    message: Union[str, bytes]) -> Optional[Awaitable[None]]:
         logging.info("LobbyWebSocketHandler.on_message")
         self.write_message(message)
+
+        model = json.loads(message, object_hook=decode_message)
 
     def on_close(self) -> None:
         logging.info("LobbyWebSocketHandler.on_close")
